@@ -1,0 +1,113 @@
+# This is the flQuake SWC make file
+# Before running the makefile with make, you must turn Alchemy on by typing:
+# alc-on
+
+SRCS= \
+	../engine/nonintel.c \
+	../engine/net_vcr.c \
+	../engine/net_main.c \
+	../engine/net_loop.c \
+	../engine/net_dgrm.c \
+	../engine/model.c \
+	../engine/menu.c \
+	../engine/mathlib.c \
+	../engine/keys.c \
+	../engine/host_cmd.c \
+	../engine/host.c \
+	../engine/r_draw.c \
+	../engine/d_zpoint.c \
+	../engine/d_vars.c \
+	../engine/d_surf.c \
+	../engine/d_sprite.c \
+	../engine/d_sky.c \
+	../engine/d_scan.c \
+	../engine/d_polyse.c \
+	../engine/d_part.c \
+	../engine/d_modech.c \
+	../engine/d_init.c \
+	../engine/d_fill.c \
+	../engine/d_edge.c \
+	../engine/cvar.c \
+	../engine/crc.c \
+	../engine/console.c \
+	../engine/common.c \
+	../engine/cmd.c \
+	../engine/cl_tent.c \
+	../engine/cl_parse.c \
+	../engine/cl_main.c \
+	../engine/cl_input.c \
+	../engine/cl_demo.c \
+	../engine/chase.c \
+	../engine/zone.c \
+	../engine/world.c \
+	../engine/wad.c \
+	../engine/view.c \
+	../engine/sv_user.c \
+	../engine/sv_phys.c \
+	../engine/sv_move.c \
+	../engine/sv_main.c \
+	../engine/screen.c \
+	../engine/sbar.c \
+	../engine/r_vars.c \
+	../engine/r_surf.c \
+	../engine/r_sprite.c \
+	../engine/r_sky.c \
+	../engine/r_part.c \
+	../engine/r_misc.c \
+	../engine/r_main.c \
+	../engine/r_light.c \
+	../engine/r_efrag.c \
+	../engine/r_edge.c \
+	../engine/r_bsp.c \
+	../engine/r_alias.c \
+	../engine/r_aclip.c \
+	../engine/pr_exec.c \
+	../engine/pr_edict.c \
+	../engine/pr_cmds.c \
+	../engine/sys_flash.c \
+	../engine/vid_flash.c \
+	../engine/cd_flash.c \
+	../engine/in_flash.c \
+	../engine/snd_dma.c \
+	../engine/snd_mix.c \
+	../engine/snd_mem.c \
+	../engine/r_2d.c \
+	../engine/draw.c \
+	../engine/net_none.c
+
+SRCTYPE=c
+CC=gcc
+
+WARN= -Wall -Werror-implicit-function-declaration
+OUTPUT= quake
+CFLAGS= $(WARN) -DFLASH -DNO_ASM
+
+ifeq ($(DEBUG),1)
+OPTIM= -g
+OBJDIR= Debug
+else
+OPTIM= -O3
+OBJDIR= Release
+endif
+
+OUTPUTFILE= $(OUTPUT).swc
+OUTPUTDIR= lib
+
+all: $(OBJDIR)/$(OUTPUTFILE)
+	@mkdir -p $(OUTPUTDIR)
+	cp $(OBJDIR)/$(OUTPUTFILE) $(OUTPUTDIR)/$(OUTPUTFILE)
+VPATH += $(dir $(SRCS))
+OBJS= $(patsubst %.$(SRCTYPE),$(OBJDIR)/%.o,$(notdir $(SRCS)))
+$(OBJDIR)/$(OUTPUTFILE): $(OBJS)
+	@#export ACHACKS_TMPS=1; keeps the generated .as file
+	export ACHACKS_TMPS=0; cd $(OBJDIR); $(CC) $(notdir $(OBJS)) $(OPTIM) -swc -o $(OUTPUTFILE)
+	
+INCLUDES=
+$(OBJDIR)/%.o: %.$(SRCTYPE)
+	@mkdir -p $(OBJDIR)
+	@rm -f $@
+	cd $(OBJDIR); $(CC) $(CFLAGS) $(INCLUDES) $(OPTIM) -c ../$< -o $(notdir $@)
+	
+clean:
+	@rm -f $(OBJS)
+	
